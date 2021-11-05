@@ -1,0 +1,8 @@
+name = Repeating Dates
+description = Provides a field type for dates with repeat rules.
+type = module
+backdrop = 1.x
+package = Fields
+tags[] = Fields
+
+dependencies[] = field
