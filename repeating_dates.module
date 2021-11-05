@@ -353,6 +353,10 @@ function repeating_dates_process_datelist($element) {
   if (count($element['#default_value']) > 0) {
     $weight = 0;
     $field_name = $element['#parents'][0];
+    // Back from preview the value got messed.
+    if (isset($element['#default_value']['add_exception'])) {
+      $element['#default_value'] = $element['#default_value']['dates'];
+    }
     foreach ($element['#default_value'] as $index => $date) {
       $weight += 0.001;
       $element += array($index => array());
