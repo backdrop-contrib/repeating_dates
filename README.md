@@ -22,8 +22,8 @@ To calculate the list of dates, this module uses the MIT licensed
 ([rlanvin](https://github.com/rlanvin))
 
 This module is inspired by, but in no way similar to Date Repeat, which is
-currently getting forked - but that turned out to be way more difficult,
-because it's an incomplete stub.
+ currently getting ported - but that turned out to be very difficult,
+ as it's an incomplete stub.
 
 ## License
 
