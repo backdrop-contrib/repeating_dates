@@ -1,6 +1,19 @@
 # Changelog
 
-## [Unreleased]
+## [2.3.0] - 2021-10-25
+
+### Added
+
+- Added Swedish translation [#96](https://github.com/rlanvin/php-rrule/pull/96/)
+- Added `bin/review_translations.php` as a helper for translators and contributors
+- Added Hebrew translation [#95](https://github.com/rlanvin/php-rrule/pull/95)
+
+### Fixed
+
+- Fix Finnish translation [#94](https://github.com/rlanvin/php-rrule/issues/94)
+- Update French translation
+- Update German translation
+- Fix compatibility with PHP 8.1 [#100](https://github.com/rlanvin/php-rrule/pull/100)
 
 ## [2.2.2] - 2021-01-09
 
