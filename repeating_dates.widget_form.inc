@@ -23,6 +23,12 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     // "-1" makes no sense as #max attribute.
     $cardinality = 300;
   }
+  elseif ($cardinality < 5) {
+    backdrop_set_message(t('The field setting for max values in %field is very low. You can only save !numvalue.', array(
+      '%field' => $instance['label'],
+      '!numvalue' => format_plural($cardinality, '1 value', '@count values'),
+    )), 'warning');
+  }
   $weekday_options = _repeating_dates_weekday_options();
 
   $selector_part = $instance['field_name'] . '[und][rrule]';
