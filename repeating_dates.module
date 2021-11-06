@@ -290,8 +290,8 @@ function repeating_dates_add_exdate($form, &$form_state) {
     if (!empty($form_state['input'][$field_name]['und']['rrule']['exdates']['dates'])) {
       $datelist = $form_state['input'][$field_name]['und']['rrule']['exdates']['dates'];
       foreach ($datelist as $input) {
-        // Filter out empty values and invalid input.
-        if (empty($input) || !is_string($input)) {
+        // Filter out invalid input.
+        if (!is_string($input)) {
           continue;
         }
         // Filter out strings that are no dates as we expect them.
