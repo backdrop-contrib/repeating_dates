@@ -501,7 +501,9 @@ function _repeating_dates_rule_description($values) {
     global $language;
     // @todo outcome is at least as odd as with date_repeat. :(
     // @todo and it's relatively slow.
-    $rrule_obj = new RRule("DTSTART;TZID=$tz:" . $dtstart->format('Ymd\THis') . "\r\n" . $values['rrule']);
+    $rule_parts = explode("\r\n", $values['rrule']);
+    // @todo RSet does not have humanReadable(), so no support for exdates?
+    $rrule_obj = new RRule("DTSTART;TZID=$tz:" . $dtstart->format('Ymd\THis') . "\r\n" . $rule_parts[0]);
     return $rrule_obj->humanReadable(array('locale' => $language->langcode));
   }
   catch (Exception $e) {
