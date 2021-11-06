@@ -19,6 +19,11 @@ Then you can add the "Date (repeating)" field to content types. Note that it's
 The field cardinality global setting controls the max amount of date values,
  that get saved to the database. Make sure that this value is high enough.
 
+## Issues
+
+Bugs and feature requests should be reported in the
+ [Issue Queue](https://github.com/backdrop-contrib/repeating_dates/issues).
+
 ## Current maintainers
 
 * [Indigoxela](https://github.com/indigoxela)
