@@ -379,6 +379,11 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#type' => 'details',
     '#summary' => t('Exclude dates'),
     '#open' => (count($exdates) > 0) ? TRUE : FALSE,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="' . $selector_part . '[freq]"]' => array('!value' => ''),
+      ),
+    ),
   );
   $wrapper_id = backdrop_clean_css_identifier($instance['field_name'] . '-datelist-wrapper');
   $element['rrule']['exdates']['dates'] = array(
