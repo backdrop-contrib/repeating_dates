@@ -18,7 +18,7 @@ use RRule\RSet;
 function repeating_dates_field_info() {
   return array(
     'repeating_date' => array(
-      'label' => t('Repeating date'),
+      'label' => t('Date (repeating)'),
       'description' => t('This field stores start and end datetime and a rule to repeat.'),
       'settings' => array(),
       'instance_settings' => array(),
