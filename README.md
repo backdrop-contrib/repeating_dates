@@ -10,7 +10,7 @@ CAUTION: This new module is work in progress, but testing is highly appreciated.
 ## Installation
 
 Install this module using the official Backdrop CMS
- [instructions](https://backdropcms.org/guide/modules)
+ [instructions](https://docs.backdropcms.org/documentation/extend-with-modules)
 
 Then you can add the "Date (repeating)" field to content types. Note that it's
  really a standalone field type - you can not use any of the other Date field
