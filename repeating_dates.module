@@ -129,10 +129,14 @@ function _repeating_dates_widget_validate($element, &$form_state, $form) {
   $parents = implode('][', $element['#parents']);
 
   $dtstart_str = trim(implode(' ', $rrule['dtstart']));
-  if (isset($rrule['dtend'])) {
+
+  $type = $form[$field_name][LANGUAGE_NONE]['rrule']['dtend']['#type'];
+  if ($type != 'value' && isset($rrule['dtend'])) {
     $dtend_str = trim(implode(' ', $rrule['dtend']));
   }
   else {
+    // Either dtend is empty, or the form item is hidden, in both cases we set
+    // the value automatically.
     $dtend_str = $dtstart_str;
   }
 
