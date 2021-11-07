@@ -32,7 +32,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   $weekday_options = _repeating_dates_weekday_options();
 
   $selector_part = $instance['field_name'] . '[und][rrule]';
-  $settings = $instance['settings'];// @todo.
+  $widget_settings = $instance['widget']['settings'];
 
   $element = array();
   $element['rrule'] = array(
@@ -50,30 +50,34 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#attributes' => array(
       'time' => array('step' => '60'),
     ),
+    '#required' => $instance['required'],
   );
   // Ical: DTEND
-  $element['rrule']['dtend'] = array(
-    '#type' => 'html_datetime',
-    '#title' => t('To', array(), array('context' => 'Until date or time')),
-    '#default_value' => isset($parsed['dtend']) ? $parsed['dtend'] : NULL,
-    '#suffix' => '</div>',
-    '#attributes' => array(
-      'time' => array('step' => '60'),
-    ),
-  );
+  if (!$widget_settings['hide_to_date']) {
+    $element['rrule']['dtend'] = array(
+      '#type' => 'html_datetime',
+      '#title' => t('To', array(), array('context' => 'Until date or time')),
+      '#default_value' => isset($parsed['dtend']) ? $parsed['dtend'] : NULL,
+      '#suffix' => '</div>',
+      '#attributes' => array(
+        'time' => array('step' => '60'),
+      ),
+    );
+  }
+  else {
+    $element['rrule']['dtend'] = array(
+      '#type' => 'value',
+      '#value' => isset($parsed['dtstart']) ? $parsed['dtstart'] : NULL,
+    );
+    $element['rrule']['dtstart']['#suffix'] = '</div>';
+  }
 
   // Ical: FREQ
   $element['rrule']['freq'] = array(
     '#type' => 'select',
     '#title' => t('Repeats'),
-    '#options' => array(
-      'daily' => t('Daily'),
-      'weekly' => t('Weekly'),
-      'monthly' => t('Monthly'),
-      'yearly' => t('Yearly'),
-      '' => t('Do not repeat'),
-    ),
-    '#default_value' => isset($parsed['freq']) ? $parsed['freq'] : 'daily',
+    '#options' => _repeating_dates_frequency_options(),
+    '#default_value' => isset($parsed['freq']) ? $parsed['freq'] : $widget_settings['default_repeat_freq'],
     '#wrapper_attributes' => array('class' => array('frequency-select')),
   );
 
@@ -391,6 +395,9 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
+  if (!empty($widget_settings['exdate_helptext'])) {
+    $element['rrule']['exdates']['#details'] = check_plain($widget_settings['exdate_helptext']);
+  }
   $wrapper_id = backdrop_clean_css_identifier($instance['field_name'] . '-datelist-wrapper');
   $element['rrule']['exdates']['dates'] = array(
     '#type' => 'repeating_dates_datelist',
