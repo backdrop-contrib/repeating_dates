@@ -407,7 +407,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   $element['rrule']['exdates']['add_exception'] = array(
     '#type' => 'submit',
     '#value' => t('Add exception'),
-    '#submit' => array('repeating_dates_add_exdate'),
+    '#submit' => array(),
     '#limit_validation_errors' => array($parents),
     '#ajax' => array(
       'callback' => 'repeating_dates_add_exdate_callback',
