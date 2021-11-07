@@ -358,17 +358,14 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // @todo These min/max/default values should be configurable.
   // Ical: UNTIL.
   $date = new DateTime('+ 3 months', new DateTimeZone('UTC'));
-  $date_max = $date->modify('+ 1 year');
   $element['rrule']['until'] = array(
     '#type' => 'html_date',
     '#title' => t('Stop on'),
     '#default_value' => isset($parsed['until']) ? $parsed['until'] : $date->format('Y-m-d'),
     '#attributes' => array(
       'min' => format_date(REQUEST_TIME, 'custom', 'Y-m-d'),
-      'max' => $date_max->format('Y-m-d'),
     ),
     '#states' => array(
       'visible' => array(
