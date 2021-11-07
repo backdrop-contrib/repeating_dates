@@ -3,6 +3,7 @@
  * @file
  * Repeating dates main module code.
  */
+
 require_once __DIR__ . '/libraries/php-rrule/src/RfcParser.php';
 require_once __DIR__ . '/libraries/php-rrule/src/RRuleInterface.php';
 require_once __DIR__ . '/libraries/php-rrule/src/RRuleTrait.php';
@@ -32,11 +33,11 @@ function repeating_dates_field_info() {
  * Implements hook_field_is_empty().
  */
 function repeating_dates_field_is_empty($item, $field) {
-  // Date only.
+  // Nothing at all.
   if (empty($item['dtstart'])) {
     return TRUE;
   }
-  // Date and time. @todo consider field settings.
+  // Start date is empty.
   if (isset($item['dtstart']['date']) && empty($item['dtstart']['date'])) {
     return TRUE;
   }
@@ -48,13 +49,6 @@ function repeating_dates_field_is_empty($item, $field) {
  * Implements hook_field_widget_info().
  */
 function repeating_dates_field_widget_info() {
-  /*
-  settings:
-  - Choose base date format
-  - Display (start / both)
-  - Only future dates
-  - Show/hide repeat rule
-  */
   return array(
     'repeating_date_widget' => array(
       'label' => t('Repeating date widget'),
@@ -82,16 +76,16 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
   if ($widget['type'] == 'repeating_date_widget') {
     $form = array();
     $form['hide_to_date'] = array(
-     '#type' => 'checkbox',
-     '#title' => t('Hide to-date input'),
-     '#default_value' => $settings['hide_to_date'],
-     '#description' => t('When to-date is hidden, only a single datetime input is available for start date, no duration.'),
+      '#type' => 'checkbox',
+      '#title' => t('Hide to-date input'),
+      '#default_value' => $settings['hide_to_date'],
+      '#description' => t('When to-date is hidden, only a single datetime input is available for start date, no duration.'),
     );
     $form['default_repeat_freq'] = array(
-     '#type' => 'select',
-     '#title' => t('Default repeat frequency'),
-     '#options' => _repeating_dates_frequency_options(),
-     '#default_value' => $settings['default_repeat_freq'],
+      '#type' => 'select',
+      '#title' => t('Default repeat frequency'),
+      '#options' => _repeating_dates_frequency_options(),
+      '#default_value' => $settings['default_repeat_freq'],
     );
     $form['exdate_helptext'] = array(
       '#type' => 'textfield',
@@ -118,7 +112,6 @@ function repeating_dates_field_widget_form(&$form, &$form_state, $field, $instan
         $element['rrule']['#description'] = $element['#description'];
       }
 
-      // @todo Maybe this could be based on a field setting?
       $element['#attached']['css'][] = backdrop_get_path('module', 'repeating_dates') . '/css/repeating-dates.css';
 
       break;
@@ -435,7 +428,10 @@ function _repeating_dates_array_to_timestamp($values, $timezone = 'UTC') {
 /**
  * Helper function to build an ical rule from form submissions.
  *
+ * @param array $rrule
+ *   Array of rrule components as provided by the widget form.
  * @param object $start_date
+ *   Datetime object of the start date.
  */
 function _repeating_dates_build_rrule($rrule, $start_date) {
   $components = array();
@@ -494,7 +490,7 @@ function _repeating_dates_build_rrule($rrule, $start_date) {
   else {
     $components[] = 'COUNT=' . max($rrule['count'], 1);
   }
-  $first_day = config_get('system.date','first_day');
+  $first_day = config_get('system.date', 'first_day');
   $keys = _repeating_dates_get_ical_daykeys();
   $components[] = 'WKST=' . $keys[$first_day];
 
