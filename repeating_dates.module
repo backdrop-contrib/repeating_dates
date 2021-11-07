@@ -137,6 +137,7 @@ function _repeating_dates_widget_validate($element, &$form_state, $form) {
   else {
     // Either dtend is empty, or the form item is hidden, in both cases we set
     // the value automatically.
+    $form_state['values'][$field_name][LANGUAGE_NONE]['rrule']['dtend'] = $rrule['dtstart'];
     $dtend_str = $dtstart_str;
   }
 
