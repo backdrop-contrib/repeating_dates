@@ -40,8 +40,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#title' => $instance['label'],
   );
 
-  // @todo this should be more flexible... Date, datetime, optional end?
-  // Ical: DTSTART
+  // Ical: DTSTART.
   $element['rrule']['dtstart'] = array(
     '#type' => 'html_datetime',
     '#title' => t('Start'),
@@ -52,7 +51,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
     '#required' => $instance['required'],
   );
-  // Ical: DTEND
+  // Ical: DTEND.
   if (!$widget_settings['hide_to_date']) {
     $element['rrule']['dtend'] = array(
       '#type' => 'html_datetime',
@@ -72,7 +71,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     $element['rrule']['dtstart']['#suffix'] = '</div>';
   }
 
-  // Ical: FREQ
+  // Ical: FREQ.
   $element['rrule']['freq'] = array(
     '#type' => 'select',
     '#title' => t('Repeats'),
@@ -81,7 +80,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#wrapper_attributes' => array('class' => array('frequency-select')),
   );
 
-  // Ical: INTERVAL
+  // Ical: INTERVAL.
   $element['rrule']['interval_day'] = array(
     '#type' => 'number',
     '#title' => t('Every'),
@@ -101,7 +100,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   );
 
   // Group "weekly".
-  // Ical: INTERVAL
+  // Ical: INTERVAL.
   $element['rrule']['interval_week'] = array(
     '#type' => 'number',
     '#title' => t('Every'),
@@ -119,7 +118,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYDAY
+  // Ical: BYDAY.
   $element['rrule']['byday_week'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Weekdays'),
@@ -136,7 +135,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   );
 
   // Group "monthly".
-  // Ical: INTERVAL
+  // Ical: INTERVAL.
   $element['rrule']['interval_month'] = array(
     '#type' => 'number',
     '#title' => t('Every'),
@@ -154,7 +153,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Switch between BYMONTHDAY and BYSETPOS + BYDAY
+  // Switch between BYMONTHDAY and BYSETPOS + BYDAY.
   $element['rrule']['monthday_setpos'] = array(
     '#type' => 'radios',
     '#title' => t('Selection type'),
@@ -172,7 +171,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYMONTHDAY
+  // Ical: BYMONTHDAY.
   $element['rrule']['bymonthday_month'] = array(
     '#type' => 'number',
     '#title' => t('Day of month'),
@@ -191,7 +190,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYSETPOS
+  // Ical: BYSETPOS.
   $element['rrule']['bysetpos_month'] = array(
     '#type' => 'select',
     '#title' => t('Position'),
@@ -209,7 +208,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
     '#prefix' => '<div class="rd-group rd-group-posday">',
   );
-  // Ical: BYDAY
+  // Ical: BYDAY.
   $element['rrule']['byday_month'] = array(
     '#type' => 'select',
     '#title' => 'Day',
@@ -229,7 +228,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   );
 
   // Group "yearly".
-  // Switch between BYMONTHDAY + BYMONTH and BYSETPOS + BYDAY + BYMONTH
+  // Switch between BYMONTHDAY + BYMONTH and BYSETPOS + BYDAY + BYMONTH.
   $element['rrule']['yearly_setpos'] = array(
     '#type' => 'radios',
     '#title' => t('Selection type'),
@@ -247,7 +246,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYMONTHDAY
+  // Ical: BYMONTHDAY.
   $element['rrule']['bymonthday_year'] = array(
     '#type' => 'number',
     '#title' => t('Day'),
@@ -267,7 +266,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
     '#prefix' => '<div class="rd-group rd-group-year">',
   );
-  // Ical: BYSETPOS
+  // Ical: BYSETPOS.
   $element['rrule']['bysetpos_year'] = array(
     '#type' => 'select',
     '#title' => t('Position'),
@@ -284,7 +283,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYDAY
+  // Ical: BYDAY.
   unset($weekday_options['any']);
   $element['rrule']['byday_year'] = array(
     '#type' => 'select',
@@ -302,7 +301,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: BYMONTH
+  // Ical: BYMONTH.
   $element['rrule']['bymonth_year'] = array(
     '#type' => 'select',
     '#title' => t('Month'),
@@ -321,7 +320,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
 
   // Setting an explicit end is essential, as we write all recurrences to the
   // database.
-  // Switch between COUNT and UNTIL
+  // Switch between COUNT and UNTIL.
   $element['rrule']['stopby'] = array(
     '#type' => 'radios',
     '#title' => t('Stop based on'),
@@ -339,7 +338,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       ),
     ),
   );
-  // Ical: COUNT
+  // Ical: COUNT.
   $element['rrule']['count'] = array(
     '#type' => 'number',
     '#title' => t('Stop after'),
@@ -360,7 +359,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
   );
   // @todo These min/max/default values should be configurable.
-  // Ical: UNTIL
+  // Ical: UNTIL.
   $date = new DateTime('+ 3 months', new DateTimeZone('UTC'));
   $date_max = $date->modify('+ 1 year');
   $element['rrule']['until'] = array(
