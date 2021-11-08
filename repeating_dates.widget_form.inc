@@ -339,6 +339,12 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
   );
   // Ical: COUNT.
+  $count = $cardinality;
+  if (isset($parsed['count']) && $parsed['count'] <= $cardinality) {
+    // The default value could have changed in the meantime, don't let it be
+    // higher than the field cardinality.
+    $count = $parsed['count'];
+  }
   $element['rrule']['count'] = array(
     '#type' => 'number',
     '#title' => t('Stop after'),
@@ -346,7 +352,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#max' => $cardinality,
     '#size' => 3,
     '#field_suffix' => t('recurrences'),
-    '#default_value' => isset($parsed['count']) ? $parsed['count'] : $cardinality,
+    '#default_value' => $count,
     '#states' => array(
       'visible' => array(
         ':input[name="' . $selector_part . '[freq]"]' => array('!value' => ''),
