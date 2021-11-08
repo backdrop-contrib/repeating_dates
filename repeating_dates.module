@@ -13,6 +13,8 @@ require_once __DIR__ . '/libraries/php-rrule/src/RSet.php';
 use RRule\RRule;
 use RRule\RSet;
 
+define('REPEATING_DATES_MAX_VALUES', 366);
+
 /**
  * Implements hook_field_info().
  */
@@ -246,7 +248,7 @@ function repeating_dates_field_presave($entity_type, $entity, $field, $instance,
       $max = $field['cardinality'];
       $exceeded = FALSE;
       if ($max == FIELD_CARDINALITY_UNLIMITED) {
-        $max = 300;
+        $max = REPEATING_DATES_MAX_VALUES;
       }
       try {
         $string = "DTSTART;TZID=$tz:" . $dtstart_obj->format('Ymd\THis') . "\r\n" . $ical_rrule;

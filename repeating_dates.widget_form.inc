@@ -21,7 +21,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
 
   if ($cardinality == FIELD_CARDINALITY_UNLIMITED) {
     // "-1" makes no sense as #max attribute.
-    $cardinality = 365;
+    $cardinality = REPEATING_DATES_MAX_VALUES;
   }
   elseif ($cardinality < 5) {
     backdrop_set_message(t('The field setting for max values in %field is very low. You can only save !numvalue.', array(
