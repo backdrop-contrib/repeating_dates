@@ -255,7 +255,7 @@ function repeating_dates_field_presave($entity_type, $entity, $field, $instance,
         $rrule_obj = RRule::createFromRfcString($string);
 
         foreach ($rrule_obj as $delta => $recurrence) {
-          if ($delta == $max) {
+          if ($delta > $max) {
             $exceeded = TRUE;
             break;
           }
