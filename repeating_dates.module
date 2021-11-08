@@ -89,7 +89,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
     );
     $form['exdate_helptext'] = array(
       '#type' => 'textfield',
-      '#title' => t('Help text for exluded dates'),
+      '#title' => t('Help text for excluded dates'),
       '#default_value' => $settings['exdate_helptext'],
     );
 
