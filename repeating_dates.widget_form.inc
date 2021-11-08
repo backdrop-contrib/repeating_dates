@@ -24,7 +24,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     $cardinality = REPEATING_DATES_MAX_VALUES;
   }
   elseif ($cardinality < 5) {
-    backdrop_set_message(t('The field setting for max values in %field is very low. You can only save !numvalue.', array(
+    backdrop_set_message(t('The "Number of values" setting in the field %field is very low. You can only save !numvalue.', array(
       '%field' => $instance['label'],
       '!numvalue' => format_plural($cardinality, '1 value', '@count values'),
     )), 'warning');
