@@ -346,7 +346,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#max' => $cardinality,
     '#size' => 3,
     '#field_suffix' => t('recurrences'),
-    '#default_value' => isset($parsed['count']) ? $parsed['count'] : 10,
+    '#default_value' => isset($parsed['count']) ? $parsed['count'] : $cardinality,
     '#states' => array(
       'visible' => array(
         ':input[name="' . $selector_part . '[freq]"]' => array('!value' => ''),
