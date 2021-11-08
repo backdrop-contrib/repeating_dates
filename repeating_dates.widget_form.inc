@@ -484,6 +484,9 @@ function _repeating_dates_weedays_short() {
     }
     $days_abbr = $after + $before;
   }
+  else {
+    $days_abbr = array_combine($ical_keys, $days_abbr);
+  }
   return $days_abbr;
 }
 
