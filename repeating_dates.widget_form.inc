@@ -84,9 +84,9 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   $element['rrule']['interval_day'] = array(
     '#type' => 'number',
     '#title' => t('Every'),
-    '#field_suffix' => 'day(s)',
+    '#field_suffix' => t('day(s)'),
     '#min' => 1,
-    '#max' => 365,
+    '#max' => 366,
     '#size' => 3,
     '#default_value' => isset($parsed['interval_day']) ? $parsed['interval_day'] : 1,
     '#states' => array(
