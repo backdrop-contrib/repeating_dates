@@ -176,8 +176,87 @@ function repeating_dates_field_formatter_info() {
     'repeating_date_list' => array(
       'label' => t('Repeating date list'),
       'field types' => array('repeating_date'),
+      'settings' => array(
+        'hide_description' => FALSE,
+        'datetime_format' => 'short',
+        'dateonly_format' => 'html_date',
+        'timeonly_format' => 'html_time',
+      ),
     ),
   );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function repeating_dates_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element = array();
+  if ($display['type'] == 'repeating_date_list') {
+    $element['hide_description'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'Hide the rule summary (description)',
+      '#default_value' => $settings['hide_description'],
+    );
+  }
+
+  $date_formats = system_get_date_formats();
+  $options = array();
+  foreach ($date_formats as $name => $values) {
+    $options[$name] = $values['label'];
+  }
+  $element['datetime_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Full date and time format'),
+    '#options' => $options,
+    '#default_value' => $settings['datetime_format'],
+  );
+  $element['dateonly_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Date only format'),
+    '#options' => $options,
+    '#default_value' => $settings['dateonly_format'],
+  );
+  $element['timeonly_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Time only format'),
+    '#options' => $options,
+    '#default_value' => $settings['timeonly_format'],
+    '#description' => t('You might want to create a custom format for date only or time only.'),
+  );
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function repeating_dates_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $list = array();
+
+  if ($settings['hide_description']) {
+    $list[] = t('The repeat rule summary is hidden.');
+  }
+  else {
+    $list[] = t('The repeat rule summary is shown.');
+  }
+  $formats = system_get_date_formats();
+  $list[] = t('Full datetime format is %format', array(
+    '%format' => $formats[$settings['datetime_format']]['label'],
+  ));
+  $list[] = t('Date only format is %format', array(
+    '%format' => $formats[$settings['dateonly_format']]['label'],
+  ));
+  $list[] = t('Time only format is %format', array(
+    '%format' => $formats[$settings['timeonly_format']]['label'],
+  ));
+
+  $summary = theme('item_list', array('items' => $list));
+  return $summary;
 }
 
 /**
@@ -200,14 +279,26 @@ function repeating_dates_field_formatter_view($object_type, $object, $field, $in
         return $element;
       }
 
-      // @todo optional output by display setting?
-      $prefix = '<div class="rrule-description">' . _repeating_dates_rule_description($items[0]) . '</div>';
+      $settings = $display['settings'];
+      $prefix = '';
+      if (!$settings['hide_description']) {
+        $prefix = '<div class="rrule-description">' . _repeating_dates_rule_description($items[0], $settings) . '</div>';
+      }
       $item_list = array();
+      $dtstart_date = format_date($items[0]['dtstart'], 'custom', 'Y-m-d');
+      $dtend_date = format_date($items[0]['dtend'], 'custom', 'Y-m-d');
+
       foreach ($items as $delta => $item) {
-        // @todo This output is improvised.
-        $item_list[$delta] = format_date($item['dtstart']);
+        $item_list[$delta] = format_date($item['dtstart'], $settings['datetime_format']);
+        // Skip "To" datetime, if it's the same as start.
         if ($item['dtend'] != $item['dtstart']) {
-          $item_list[$delta] .= ' to ' . format_date($item['dtend']);
+          // Skip redundant date info, if both dates are the same.
+          if ($dtstart_date == $dtend_date) {
+            $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['timeonly_format']);
+          }
+          else {
+            $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['datetime_format']);
+          }
         }
       }
       $element[0] = array(
@@ -541,8 +632,13 @@ function _repeating_dates_frequency_options() {
 
 /**
  * Helper function to return a descriptive repesentation of the rrule.
+ *
+ * @param array $values
+ *   Keyed array with field values from the database.
+ * @param array $settings
+ *   Formatter settings for this field.
  */
-function _repeating_dates_rule_description($values) {
+function _repeating_dates_rule_description($values, $settings) {
   $tz = date_default_timezone();
   $dtstart = new DateTime('@' . $values['dtstart']);
   $dtstart->setTimezone(new DateTimeZone($tz));
@@ -560,13 +656,12 @@ function _repeating_dates_rule_description($values) {
       if (!empty($rule_parts[1])) {
         $dates = array();
         $datelist_parts = explode(':', $rule_parts[1]);
-        // The dates' timezone might be different to the current one.
+        // The dates' timezone might be different from the current one.
         $timezone = str_replace('EXDATE;TZID=', '', $datelist_parts[0]);
         $date_strings = explode(',', $datelist_parts[1]);
         foreach ($date_strings as $string) {
           $date = new DateTime($string, new DateTimeZone($timezone));
-          // @todo date-only format.
-          $dates[] = format_date($date->format('U'));
+          $dates[] = format_date($date->format('U'), $settings['dateonly_format']);
         }
         $description .= '<br>' . t('Except for: !dates', array(
           '!dates' => implode(', ', $dates),
