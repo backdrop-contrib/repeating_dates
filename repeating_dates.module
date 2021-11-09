@@ -491,7 +491,7 @@ function repeating_dates_process_datelist($element) {
         '#type' => 'html_date',
         '#title' => t('Date !num', array('!num' => ($index + 1))),
         '#title_display' => 'invisible',
-        '#default_value' => isset($element['#default_value'][$index]) ? $element['#default_value'][$index] : '',
+        '#default_value' => $element['#default_value'][$index],
         '#value' => $element['#default_value'][$index],
         '#attributes' => $element['#attributes'],
         '#parents' => array_merge($element['#parents'], array($index)),
