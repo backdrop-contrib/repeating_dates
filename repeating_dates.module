@@ -550,12 +550,29 @@ function _repeating_dates_rule_description($values) {
   if (!empty($values['rrule'])) {
     try {
       global $language;
+      $description = '';
       // @todo outcome is at least as odd as with date_repeat. :(
       // @todo and it's relatively slow.
       $rule_parts = explode("\r\n", $values['rrule']);
-      // @todo RSet does not have humanReadable(), so no support for exdates?
       $rrule_obj = new RRule("DTSTART;TZID=$tz:" . $dtstart->format('Ymd\THis') . "\r\n" . $rule_parts[0]);
-      return $rrule_obj->humanReadable(array('locale' => $language->langcode));
+      $description = $rrule_obj->humanReadable(array('locale' => $language->langcode));
+
+      if (!empty($rule_parts[1])) {
+        $dates = array();
+        $datelist_parts = explode(':', $rule_parts[1]);
+        // The dates' timezone might be different to the current one.
+        $timezone = str_replace('EXDATE;TZID=', '', $datelist_parts[0]);
+        $date_strings = explode(',', $datelist_parts[1]);
+        foreach ($date_strings as $string) {
+          $date = new DateTime($string, new DateTimeZone($timezone));
+          // @todo date-only format.
+          $dates[] = format_date($date->format('U'));
+        }
+        $description .= '<br>' . t('Except for: !dates', array(
+          '!dates' => implode(', ', $dates),
+        ));
+      }
+      return $description;
     }
     catch (Exception $e) {
       // This is for node display. No dblog to prevent flooding.
