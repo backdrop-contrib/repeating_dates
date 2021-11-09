@@ -662,9 +662,10 @@ function _repeating_dates_rule_description($values, $settings) {
         $datelist_parts = explode(':', $rule_parts[1]);
         // The dates' timezone might be different from the current one.
         $timezone = str_replace('EXDATE;TZID=', '', $datelist_parts[0]);
+        $tz_obj = new DateTimeZone($timezone);
         $date_strings = explode(',', $datelist_parts[1]);
         foreach ($date_strings as $string) {
-          $date = new DateTime($string, new DateTimeZone($timezone));
+          $date = new DateTime($string, $tz_obj);
           $dates[] = format_date($date->format('U'), $settings['dateonly_format']);
         }
         $description .= '<br>' . t('Except for: !dates', array(
