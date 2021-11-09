@@ -323,59 +323,55 @@ function repeating_dates_field_presave($entity_type, $entity, $field, $instance,
   $rrule = $items['0'];
   $items_processed = array();
 
-  if (is_array($rrule['dtstart'])) {// isn't it always an array?
+  $tz = date_default_timezone();
+  $dtstart_str = trim(implode(' ', $rrule['dtstart']));
+  $dtstart_obj = new DateTime($dtstart_str, new DateTimeZone($tz));
+  $dtstart_stamp = $dtstart_obj->format('U');
+  $duration = 0;
+  $ical_rrule = _repeating_dates_build_rrule($rrule, $dtstart_obj);
+  if (is_array($rrule['dtend']) && !empty($rrule['dtend']['date'])) {
+    $dtend_stamp = _repeating_dates_array_to_timestamp($rrule['dtend'], $tz);
+    $duration = $dtend_stamp - $dtstart_stamp;
+  }
 
-    $tz = date_default_timezone();
-    $dtstart_str = trim(implode(' ', $rrule['dtstart']));
-    $dtstart_obj = new DateTime($dtstart_str, new DateTimeZone($tz));
-    $dtstart_stamp = $dtstart_obj->format('U');
-    $duration = 0;
-    $ical_rrule = _repeating_dates_build_rrule($rrule, $dtstart_obj);
-    if (is_array($rrule['dtend']) && !empty($rrule['dtend']['date'])) {
-      $dtend_stamp = _repeating_dates_array_to_timestamp($rrule['dtend'], $tz);
-      $duration = $dtend_stamp - $dtstart_stamp;
+  if (!empty($ical_rrule)) {
+    $max = $field['cardinality'];
+    $exceeded = FALSE;
+    if ($max == FIELD_CARDINALITY_UNLIMITED) {
+      $max = REPEATING_DATES_MAX_VALUES;
     }
+    try {
+      $string = "DTSTART;TZID=$tz:" . $dtstart_obj->format('Ymd\THis') . "\r\n" . $ical_rrule;
+      $rrule_obj = RRule::createFromRfcString($string);
 
-    if (!empty($ical_rrule)) {
-      $max = $field['cardinality'];
-      $exceeded = FALSE;
-      if ($max == FIELD_CARDINALITY_UNLIMITED) {
-        $max = REPEATING_DATES_MAX_VALUES;
-      }
-      try {
-        $string = "DTSTART;TZID=$tz:" . $dtstart_obj->format('Ymd\THis') . "\r\n" . $ical_rrule;
-        $rrule_obj = RRule::createFromRfcString($string);
-
-        foreach ($rrule_obj as $delta => $recurrence) {
-          if ($delta > $max) {
-            $exceeded = TRUE;
-            break;
-          }
-          $items_processed[$delta]['dtstart'] = $recurrence->format('U');
-          $items_processed[$delta]['dtend'] = $recurrence->format('U') + $duration;
-          $items_processed[$delta]['rrule'] = $ical_rrule;
+      foreach ($rrule_obj as $delta => $recurrence) {
+        if ($delta > $max) {
+          $exceeded = TRUE;
+          break;
         }
-      }
-      catch (Exception $e) {
-        watchdog_exception('repeating_dates', $e);
-        $items = array();
-        return;
-      }
-      if ($exceeded) {
-        $message = t('The repeat setup created more items than field %field_label allows. Truncated to @max recurrences.', array(
-          '%field_label' => $instance['label'],
-          '@max' => $max,
-        ));
-        backdrop_set_message($message, 'warning');
+        $items_processed[$delta]['dtstart'] = $recurrence->format('U');
+        $items_processed[$delta]['dtend'] = $recurrence->format('U') + $duration;
+        $items_processed[$delta]['rrule'] = $ical_rrule;
       }
     }
-    else {
-      // Single datetime pair, no repeat rule.
-      $items_processed[0]['dtstart'] = $dtstart_stamp;
-      $items_processed[0]['dtend'] = $dtstart_stamp + $duration;
-      $items_processed[0]['rrule'] = '';
+    catch (Exception $e) {
+      watchdog_exception('repeating_dates', $e);
+      $items = array();
+      return;
     }
-
+    if ($exceeded) {
+      $message = t('The repeat setup created more items than field %field_label allows. Truncated to @max recurrences.', array(
+        '%field_label' => $instance['label'],
+        '@max' => $max,
+      ));
+      backdrop_set_message($message, 'warning');
+    }
+  }
+  else {
+    // Single datetime pair, no repeat rule.
+    $items_processed[0]['dtstart'] = $dtstart_stamp;
+    $items_processed[0]['dtend'] = $dtstart_stamp + $duration;
+    $items_processed[0]['rrule'] = '';
   }
   // Replace rrule with processed items.
   $items = $items_processed;
