@@ -130,27 +130,28 @@ function _repeating_dates_widget_validate($element, &$form_state, $form) {
   $rrule = $form_state['values'][$field_name][LANGUAGE_NONE]['rrule'];
   $parents = implode('][', $element['#parents']);
 
-  $dtstart_str = trim(implode(' ', $rrule['dtstart']));
+  if ($element['#required'] == TRUE && empty($rrule['dtstart']['date'])) {
+    $selector = $parents . '][rrule][dtstart';
+    form_set_error($selector, t('Start date is required.'));
+  }
 
+  $tz = date_default_timezone();
+  $dtstart = _repeating_dates_array_to_timestamp($rrule['dtstart'], $tz);
   $type = $form[$field_name][LANGUAGE_NONE]['rrule']['dtend']['#type'];
-  if ($type != 'value' && isset($rrule['dtend'])) {
-    $dtend_str = trim(implode(' ', $rrule['dtend']));
+  if ($type != 'value' && !empty($rrule['dtend']['date'])) {
+    $dtend = _repeating_dates_array_to_timestamp($rrule['dtend'], $tz);
   }
   else {
     // Either dtend is empty, or the form item is hidden, in both cases we set
     // the value automatically.
     $form_state['values'][$field_name][LANGUAGE_NONE]['rrule']['dtend'] = $rrule['dtstart'];
-    $dtend_str = $dtstart_str;
+    $dtend = $dtstart;
+  }
+  if ($dtstart > $dtend) {
+    $selector = $parents . '][rrule][dtstart';
+    form_set_error($selector, t('Start can not be after end.'));
   }
 
-  if (!empty($dtstart_str) && !empty($dtend_str)) {
-    $dtstart = new DateTime($dtstart_str);
-    $dtend = new DateTime($dtend_str);
-    if ($dtstart > $dtend) {
-      $selector = $parents . '][rrule][dtstart';
-      form_set_error($selector, t('Start can not be after end.'));
-    }
-  }
   if ($rrule['freq'] == 'weekly') {
     $weekdays = array_filter($rrule['byday_week']);
     if (empty($weekdays)) {
@@ -515,12 +516,15 @@ function repeating_dates_process_datelist($element) {
  *   Unix timestamp.
  */
 function _repeating_dates_array_to_timestamp($values, $timezone = 'UTC') {
-  // @todo this might be a candiate to drop.
-  if (count($values) != 2) {
-    return '0';
+  if (is_array($values)) {
+    $string = trim(implode(' ', $values));
+    $datetime = new DateTime($string, new DateTimeZone($timezone));
+
+    if (is_object($datetime)) {
+      return $datetime->format('U');
+    }
   }
-  $datetime = new BackdropDateTime(implode(' ', $values), $timezone);
-  return $datetime->format('U');
+  return '0';
 }
 
 /**
