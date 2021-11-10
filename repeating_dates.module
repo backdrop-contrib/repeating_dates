@@ -198,7 +198,7 @@ function repeating_dates_field_formatter_settings_form($field, $instance, $view_
   if ($display['type'] == 'repeating_date_list') {
     $element['hide_description'] = array(
       '#type' => 'checkbox',
-      '#title' => 'Hide the rule summary (description)',
+      '#title' => t('Hide the rule summary (description)'),
       '#default_value' => $settings['hide_description'],
     );
 
