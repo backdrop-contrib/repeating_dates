@@ -5,7 +5,6 @@ rules.
 
 Views support for individual date values.
 
-CAUTION: This new module is work in progress, but testing is highly appreciated.
 
 ## Installation
 
