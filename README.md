@@ -5,7 +5,7 @@ rules.
 
 Views support for individual date values.
 
-![Widget screenshot](https://raw.githubusercontent.com/backdrop-contrib/repeating_dates/1.x-1.x/screenshots/screenshot-widget-weekly.png)
+![Widget screenshot](screenshots/screenshot-widget-weekly.png)
 
 ## Installation
 
