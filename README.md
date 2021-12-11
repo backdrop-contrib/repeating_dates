@@ -5,9 +5,7 @@ rules.
 
 Views support for individual date values.
 
-Widget screenshot:
-
-<img src="https://raw.githubusercontent.com/backdrop-contrib/repeating_dates/1.x-1.x/screenshots/screenshot-widget-weekly.png" width="600" height="613">
+<img src="https://raw.githubusercontent.com/backdrop-contrib/repeating_dates/1.x-1.x/screenshots/screenshot-widget-weekly.png" width="600" height="613" alt="Widget screenshot">
 
 ## Installation
 
