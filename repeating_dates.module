@@ -586,7 +586,11 @@ function _repeating_dates_build_rrule($rrule, $start_date) {
   }
 
   if ($rrule['stopby'] == 'date') {
-    $until = new DateTime($rrule['until']);
+    // Apply start date time offset to date only 'until' string.
+    $full_until_string = $rrule['until'] . ' ' . $start_date->format('H:i:s');
+    $until = new DateTime($full_until_string);
+    // Convert 'until' to UTC.
+    $until->setTimezone(new DateTimeZone('UTC'));
     $components[] = 'UNTIL=' . $until->format('Ymd\THis\Z');
   }
   else {
