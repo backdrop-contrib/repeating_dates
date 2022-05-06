@@ -465,8 +465,10 @@ function _repeating_dates_weekday_options() {
     }
     $days = $after + $before;
   }
+  else {
+    $days = array_combine($ical_keys, $days);
+  }
   $days['any'] = t('Day (any)');
-
   return $days;
 }
 
