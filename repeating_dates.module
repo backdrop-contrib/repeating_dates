@@ -58,6 +58,7 @@ function repeating_dates_field_widget_info() {
       'settings' => array(
         'hide_to_date' => FALSE,
         'default_repeat_freq' => 'weekly',
+        'default_stop_mode' => 'count',
         'exdate_helptext' => t('Exclude dates from this series of recurrences.'),
       ),
       'behaviors' => array(
@@ -89,6 +90,15 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#options' => _repeating_dates_frequency_options(),
       '#default_value' => $settings['default_repeat_freq'],
     );
+    $form['default_stop_mode'] = array(
+      '#type' => 'radios',
+      '#title' => t('By default stop repeating by'),
+      '#options' => array(
+        'count' => t('Count'),
+        'date' => t('Date'),
+      ),
+      '#default_value' => isset($settings['default_stop_mode']) ? $settings['default_stop_mode'] : 'count',
+      );
     $form['exdate_helptext'] = array(
       '#type' => 'textfield',
       '#title' => t('Help text for excluded dates'),
