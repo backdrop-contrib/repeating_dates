@@ -328,7 +328,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       'count' => t('Count'),
       'date' => t('Date'),
     ),
-    '#default_value' => isset($parsed['stopby']) ? $parsed['stopby'] : 'count',
+    '#default_value' => isset($parsed['stopby']) ? $parsed['stopby'] : $widget_settings['default_stop_mode'],
     '#states' => array(
       'visible' => array(
         ':input[name="' . $selector_part . '[freq]"]' => array('!value' => ''),
