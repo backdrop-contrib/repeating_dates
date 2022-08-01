@@ -333,6 +333,11 @@ function repeating_dates_field_presave($entity_type, $entity, $field, $instance,
   if (empty($items)) {
     return;
   }
+  // Already processed, like in VBO.
+  if (!is_array($items['0']['dtstart'])) {
+    return;
+  }
+
   // Remove wrapping delta.
   $rrule = $items['0'];
   $items_processed = array();
