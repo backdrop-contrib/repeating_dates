@@ -339,7 +339,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     ),
   );
   // Ical: COUNT.
-  $count = $cardinality;
+  $count = isset($widget_settings['default_count']) ? $widget_settings['default_count'] : $cardinality;
   if (isset($parsed['count']) && $parsed['count'] <= $cardinality) {
     // The default value could have changed in the meantime, don't let it be
     // higher than the field cardinality.

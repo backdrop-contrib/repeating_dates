@@ -98,7 +98,19 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
         'date' => t('Date'),
       ),
       '#default_value' => isset($settings['default_stop_mode']) ? $settings['default_stop_mode'] : 'count',
-      );
+    );
+    $form['default_count'] = array(
+      '#type' => 'number',
+      '#title' => t('Default count'),
+      '#default_value' => isset($settings['default_count']) ? $settings['default_count'] : 1,
+      '#min' => 1,
+      '#max' => REPEATING_DATES_MAX_VALUES,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="instance[widget][settings][default_stop_mode]"]' => array('value' => 'count'),
+        ),
+      ),
+    );
     $form['exdate_helptext'] = array(
       '#type' => 'textfield',
       '#title' => t('Help text for excluded dates'),
