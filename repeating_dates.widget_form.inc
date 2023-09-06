@@ -479,7 +479,7 @@ function _repeating_dates_default_value_part($instance, $values, $part = 'dtstar
     $date = new BackdropDateTime($default_value_code, NULL, DATE_FORMAT_DATETIME);
   }
   elseif ($part == 'end' && $default_value == 'same') {
-    if ($instance['widget']['settings']['default_value'] == 'blank') {
+    if ($instance['widget']['settings']['default_dtstart'] == 'blank') {
       return NULL;
     }
   }

@@ -60,6 +60,10 @@ function repeating_dates_field_widget_info() {
         'default_repeat_freq' => 'weekly',
         'default_stop_mode' => 'count',
         'exdate_helptext' => t('Exclude dates from this series of recurrences.'),
+        'default_dtstart' => 'blank',
+        'default_value_code' => '',
+        'default_dtend' => 'same',
+        'default_value_code2' => '',
       ),
       'behaviors' => array(
         'multiple values' => FIELD_BEHAVIOR_CUSTOM,
@@ -108,7 +112,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
     $form['default_dtstart'] = array(
       '#type' => 'select',
       '#title' => t('Default date'),
-      '#default_value' => isset($settings['default_dtstart']) ? $settings['default_dtstart'] : 'blank',
+      '#default_value' => $settings['default_dtstart'],
       '#options' => array(
         'blank'     => t('No default value'),
         'now'       => t('Now'),
@@ -122,7 +126,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#type' => 'textfield',
       '#title' => t('Relative default value'),
       '#description' => $description,
-      '#default_value' => isset($settings['default_value_code']) ? $settings['default_value_code'] : '',
+      '#default_value' => $settings['default_value_code'],
       '#states' => array(
         'visible' => array(
           ':input[name="instance[widget][settings][default_dtstart]"]' => array(
@@ -135,7 +139,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
     $form['default_dtend'] = array(
       '#type' => $settings['hide_to_date'] ? 'hidden' : 'select',
       '#title' => t('Default end date'),
-      '#default_value' => isset($settings['default_dtend']) ? $settings['default_dtend'] : 'same',
+      '#default_value' => $settings['default_dtend'],
       '#options' => array(
         'same'      => t('Same as Default date'),
         'blank'     => t('No default value'),
@@ -148,7 +152,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#type' => $settings['hide_to_date'] ? 'hidden' : 'textfield',
       '#title' => t('Relative default value for end date'),
       '#description' => $description,
-      '#default_value' => isset($settings['default_value_code2']) ? $settings['default_value_code2'] : '',
+      '#default_value' => $settings['default_value_code2'],
       '#states' => array(
         'visible' => array(
           ':input[name="instance[widget][settings][default_dtend]"]' => array(
