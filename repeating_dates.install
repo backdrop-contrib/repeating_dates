@@ -28,3 +28,22 @@ function repeating_dates_field_schema($field) {
 
   return array('columns' => $db_columns);
 }
+
+/**
+ * Update all repeating date fields to set a default count.
+ */
+function repeating_dates_update_1000() {
+  // Update field instances.
+  $config_names = config_get_names_with_prefix('field.instance.');
+  foreach ($config_names as $config_name) {
+    $config = config($config_name);
+    $data = $config->get();
+    if ($data['widget']['module'] == 'repeating_dates') {
+      if (!array_key_exists('default_count', $data['widget']['settings'])) {
+        $data['widget']['settings']['default_count'] = 1;
+        $config->setData($data);
+        $config->save();
+      }
+    }
+  }
+}
