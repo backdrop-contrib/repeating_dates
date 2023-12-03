@@ -140,6 +140,11 @@ function _repeating_dates_widget_validate($element, &$form_state, $form) {
   $rrule = $form_state['values'][$field_name][LANGUAGE_NONE]['rrule'];
   $parents = implode('][', $element['#parents']);
 
+  if (!$element['#required'] && empty($rrule['dtstart']['date'])) {
+    // Nothing to do.
+    return;
+  }
+
   if ($element['#required'] == TRUE && empty($rrule['dtstart']['date'])) {
     $selector = $parents . '][rrule][dtstart';
     form_set_error($selector, t('Start date is required.'));
