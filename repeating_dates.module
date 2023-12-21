@@ -13,7 +13,7 @@ require_once __DIR__ . '/libraries/php-rrule/src/RSet.php';
 use RRule\RRule;
 use RRule\RSet;
 
-define('REPEATING_DATES_MAX_VALUES', 366);
+define('REPEATING_DATES_MAX_VALUES', 730);
 
 /**
  * Implements hook_field_info().
@@ -219,6 +219,11 @@ function _repeating_dates_widget_validate($element, &$form_state, $form) {
   $field_name = $element['#field_name'];
   $rrule = $form_state['values'][$field_name][LANGUAGE_NONE]['rrule'];
   $parents = implode('][', $element['#parents']);
+
+  if (!$element['#required'] && empty($rrule['dtstart']['date'])) {
+    // Nothing to do.
+    return;
+  }
 
   if ($element['#required'] == TRUE && empty($rrule['dtstart']['date'])) {
     $selector = $parents . '][rrule][dtstart';

@@ -12,11 +12,13 @@ function repeating_dates_field_schema($field) {
   $db_columns = array();
   $db_columns['dtstart'] = array(
     'type' => 'int',
+    'size' => 'big',
     'not null' => FALSE,
     'description' => 'The start date of the range',
   );
   $db_columns['dtend'] = array(
     'type' => 'int',
+    'size' => 'big',
     'not null' => FALSE,
     'description' => 'The end date of the range',
   );
@@ -27,6 +29,44 @@ function repeating_dates_field_schema($field) {
   );
 
   return array('columns' => $db_columns);
+}
+
+/**
+ * Update dtstart and dtend table field schema for bigger values.
+ */
+function repeating_dates_update_1000() {
+  $config_names = config_get_names_with_prefix('field.instance');
+  $rd_field_names = array();
+  foreach ($config_names as $name) {
+    $config = config($name);
+    if ($config->get('widget.module') == 'repeating_dates') {
+      $rd_field_names[] = $config->get('field_name');
+    }
+  }
+  $start_spec = array(
+    'type' => 'int',
+    'size' => 'big',
+    'not null' => FALSE,
+    'description' => 'The start date of the range',
+  );
+  $end_spec = array(
+    'type' => 'int',
+    'size' => 'big',
+    'not null' => FALSE,
+    'description' => 'The end date of the range',
+  );
+  foreach ($rd_field_names as $field_name) {
+    $table_names = array(
+      "field_data_$field_name",
+      "field_revision_$field_name",
+    );
+    foreach ($table_names as $table_name) {
+      $start_col = $field_name . '_dtstart';
+      db_change_field($table_name, $start_col, $start_col, $start_spec);
+      $end_col = $field_name . '_dtend';
+      db_change_field($table_name, $end_col, $end_col, $end_spec);
+    }
+  }
 }
 
 /**
