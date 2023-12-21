@@ -59,7 +59,7 @@ function repeating_dates_field_widget_info() {
         'hide_to_date' => FALSE,
         'default_repeat_freq' => 'weekly',
         'default_stop_mode' => 'count',
-        'default_count' => 1,
+        'default_count' => NULL,
         'exdate_helptext' => t('Exclude dates from this series of recurrences.'),
       ),
       'behaviors' => array(
