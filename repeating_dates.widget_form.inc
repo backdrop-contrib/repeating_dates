@@ -464,27 +464,34 @@ function _repeating_dates_get_default_value(array $instance, $values) {
  */
 function _repeating_dates_default_value_part($instance, $values, $part = 'dtstart') {
   $date = NULL;
+  $widget_settings = $instance['widget']['settings'];
+  // Get defaults.
   if ($part == 'start') {
-    $default_value = $instance['widget']['settings']['default_dtstart'];
-    $default_value_code = $instance['widget']['settings']['default_value_code'];
+    $default_value = $widget_settings['default_dtstart'];
+    $default_value_code = $widget_settings['default_value_code'];
   }
   else {
-    $default_value = $instance['widget']['settings']['default_dtend'];
-    $default_value_code = $instance['widget']['settings']['default_value_code2'];
+    $default_value = $widget_settings['default_dtend'];
+    $default_value_code = $widget_settings['default_value_code2'];
   }
+
   if (empty($default_value) || $default_value == 'blank') {
     return NULL;
   }
   elseif ($default_value == 'strtotime' && !empty($default_value_code)) {
     $date = new BackdropDateTime($default_value_code, NULL, DATE_FORMAT_DATETIME);
   }
-  elseif ($part == 'end' && $default_value == 'same') {
-    if ($instance['widget']['settings']['default_dtstart'] == 'blank') {
-      return NULL;
-    }
-  }
   else {
     $date = date_now();
+  }
+
+  if ($part == 'end' && $default_value == 'same') {
+    if ($widget_settings['default_dtstart'] == 'blank') {
+      return NULL;
+    }
+    if ($widget_settings['default_dtstart'] == 'strtotime' && !empty($widget_settings['default_value_code'])) {
+      $date = new BackdropDateTime($widget_settings['default_value_code'], NULL, DATE_FORMAT_DATETIME);
+    }
   }
 
   $value = array(
