@@ -60,6 +60,10 @@ function repeating_dates_field_widget_info() {
         'default_repeat_freq' => 'weekly',
         'default_stop_mode' => 'count',
         'exdate_helptext' => t('Exclude dates from this series of recurrences.'),
+        'default_dtstart' => 'blank',
+        'default_value_code' => '',
+        'default_dtend' => 'same',
+        'default_value_code2' => '',
       ),
       'behaviors' => array(
         'multiple values' => FIELD_BEHAVIOR_CUSTOM,
@@ -105,7 +109,83 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#default_value' => $settings['exdate_helptext'],
     );
 
+    $form['default_dtstart'] = array(
+      '#type' => 'select',
+      '#title' => t('Default date'),
+      '#default_value' => $settings['default_dtstart'],
+      '#options' => array(
+        'blank'     => t('No default value'),
+        'now'       => t('Now'),
+        'strtotime' => t('Relative'),
+      ),
+      '#weight' => 1,
+    );
+
+    $description = t("Describe a time by reference to the current day, like '+90 days' (90 days from the day the field is created) or '+1 Saturday' (the next Saturday). See !strtotime for more details.", array('!strtotime' => l(t('strtotime'), 'http://www.php.net/manual/en/function.strtotime.php')));
+    $form['default_value_code'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Relative default value'),
+      '#description' => $description,
+      '#default_value' => $settings['default_value_code'],
+      '#states' => array(
+        'visible' => array(
+          ':input[name="instance[widget][settings][default_dtstart]"]' => array(
+            'value' => 'strtotime',
+          ),
+        ),
+      ),
+      '#weight' => 1.1,
+    );
+    $form['default_dtend'] = array(
+      '#type' => $settings['hide_to_date'] ? 'hidden' : 'select',
+      '#title' => t('Default end date'),
+      '#default_value' => $settings['default_dtend'],
+      '#options' => array(
+        'same'      => t('Same as Default date'),
+        'blank'     => t('No default value'),
+        'now'       => t('Now'),
+        'strtotime' => t('Relative'),
+      ),
+      '#weight' => 2,
+    );
+    $form['default_value_code2'] = array(
+      '#type' => $settings['hide_to_date'] ? 'hidden' : 'textfield',
+      '#title' => t('Relative default value for end date'),
+      '#description' => $description,
+      '#default_value' => $settings['default_value_code2'],
+      '#states' => array(
+        'visible' => array(
+          ':input[name="instance[widget][settings][default_dtend]"]' => array(
+            'value' => 'strtotime',
+          ),
+        ),
+      ),
+      '#weight' => 2.1,
+    );
+
+    $form['#element_validate'] = array('repeating_dates_field_widget_settings_form_validate');
+
     return $form;
+  }
+}
+
+/**
+ * Form validation handler for repeating_dates_field_widget_settings_form().
+ */
+function repeating_dates_field_widget_settings_form_validate(&$form, &$form_state) {
+  $settings = $form_state['values']['instance']['widget']['settings'];
+
+  if ($settings['default_dtstart'] == 'strtotime') {
+    $is_strtotime = @strtotime($settings['default_value_code']);
+    if (!$is_strtotime) {
+      form_set_error('instance][widget][settings][default_value_code', t('The Strtotime default value is invalid.'));
+    }
+  }
+  if (isset($settings['default_dtend']) && $settings['default_dtend'] == 'strtotime') {
+    $is_strtotime = @strtotime($settings['default_value_code2']);
+    if (!$is_strtotime) {
+      form_set_error('instance][widget][settings][default_value_code2', t('The Strtotime default value for the End Date is invalid.'));
+    }
   }
 }
 

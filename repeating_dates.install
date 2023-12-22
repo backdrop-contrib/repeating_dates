@@ -68,3 +68,23 @@ function repeating_dates_update_1000() {
     }
   }
 }
+
+/**
+ * Update all repeating date fields for default date settings.
+ */
+function repeating_dates_update_1001() {
+  // Update field instances.
+  $config_names = config_get_names_with_prefix('field.instance.');
+  foreach ($config_names as $config_name) {
+    $config = config($config_name);
+    $data = $config->get();
+    if ($data['widget']['module'] == 'repeating_dates') {
+      $data['widget']['settings']['default_dtstart'] = isset($data['widget']['settings']['default_dtstart']) ? $data['widget']['settings']['default_dtstart'] : 'blank';
+      $data['widget']['settings']['default_dtend'] = isset($data['widget']['settings']['default_dtend']) ? $data['widget']['settings']['default_dtend'] : 'same';
+      $data['widget']['settings']['default_value_code'] = isset($data['widget']['settings']['default_value_code']) ? $data['widget']['settings']['default_value_code'] : '';
+      $data['widget']['settings']['default_value_code2'] = isset($data['widget']['settings']['default_value_code2']) ? $data['widget']['settings']['default_value_code2'] : '';
+      $config->setData($data);
+      $config->save();
+    }
+  }
+}

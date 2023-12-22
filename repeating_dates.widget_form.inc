@@ -40,11 +40,17 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#title' => $instance['label'],
   );
 
+  if (empty($values)) {
+    $default = _repeating_dates_get_default_value($instance, $values);
+    $default_start = $default['start'];
+  }
+
+
   // Ical: DTSTART.
   $element['rrule']['dtstart'] = array(
     '#type' => 'html_datetime',
     '#title' => t('Start'),
-    '#default_value' => isset($parsed['dtstart']) ? $parsed['dtstart'] : NULL,
+    '#default_value' => isset($parsed['dtstart']) ? $parsed['dtstart'] : $default_start,
     '#prefix' => '<div class="rd-group rd-group-dtstart">',
     '#attributes' => array(
       'time' => array('step' => '60'),
@@ -53,10 +59,13 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   );
   // Ical: DTEND.
   if (!$widget_settings['hide_to_date']) {
+    if (empty($values)) {
+      $default_end = $default['end'];
+    }
     $element['rrule']['dtend'] = array(
       '#type' => 'html_datetime',
       '#title' => t('To', array(), array('context' => 'Until date or time')),
-      '#default_value' => isset($parsed['dtend']) ? $parsed['dtend'] : NULL,
+      '#default_value' => isset($parsed['dtend']) ? $parsed['dtend'] : $default_end,
       '#suffix' => '</div>',
       '#attributes' => array(
         'time' => array('step' => '60'),
@@ -427,6 +436,70 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
   $element['#element_validate'][] = '_repeating_dates_widget_validate';
 
   return $element;
+}
+
+
+/**
+ * Helper function to return default values as expected by the form item.
+ *
+ * @param array $instance
+ *   Field instance structure.
+ *
+ * @return array
+ */
+function _repeating_dates_get_default_value(array $instance, $values) {
+  $default = array(
+    'start' => NULL,
+    'end' => NULL,
+  );
+
+  $default['start'] = _repeating_dates_default_value_part($instance, $values, 'start');
+  $default['end'] = _repeating_dates_default_value_part($instance, $values, 'end');
+
+  return $default;
+}
+
+/**
+ * Helper function to get default value for start or end.
+ */
+function _repeating_dates_default_value_part($instance, $values, $part = 'dtstart') {
+  $date = NULL;
+  $widget_settings = $instance['widget']['settings'];
+  // Get defaults.
+  if ($part == 'start') {
+    $default_value = $widget_settings['default_dtstart'];
+    $default_value_code = $widget_settings['default_value_code'];
+  }
+  else {
+    $default_value = $widget_settings['default_dtend'];
+    $default_value_code = $widget_settings['default_value_code2'];
+  }
+
+  if (empty($default_value) || $default_value == 'blank') {
+    return NULL;
+  }
+  elseif ($default_value == 'strtotime' && !empty($default_value_code)) {
+    $date = new BackdropDateTime($default_value_code, NULL, DATE_FORMAT_DATETIME);
+  }
+  else {
+    $date = date_now();
+  }
+
+  if ($part == 'end' && $default_value == 'same') {
+    if ($widget_settings['default_dtstart'] == 'blank') {
+      return NULL;
+    }
+    if ($widget_settings['default_dtstart'] == 'strtotime' && !empty($widget_settings['default_value_code'])) {
+      $date = new BackdropDateTime($widget_settings['default_value_code'], NULL, DATE_FORMAT_DATETIME);
+    }
+  }
+
+  $value = array(
+    'date' => $date->format('Y-m-d'),
+    'time' => $date->format('H:i'),
+  );
+
+  return $value;
 }
 
 /**
