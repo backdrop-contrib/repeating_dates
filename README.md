@@ -34,9 +34,9 @@ To calculate the list of dates, this module uses the MIT licensed
  [RRULE for PHP](https://github.com/rlanvin/php-rrule) library by Rémi Lanvin
 ([rlanvin](https://github.com/rlanvin))
 
-This module is inspired by, but in no way similar to Date Repeat, which is
- currently getting ported - but that turned out to be very difficult,
- as it's an incomplete stub.
+This module is inspired by, but not really similar to
+[Date Repeat](https://backdropcms.org/project/date_repeat), which has been
+ported from Drupal to Backdrop CMS.
 
 ## License
 
