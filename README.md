@@ -30,13 +30,13 @@ Bugs and feature requests should be reported in the
 
 ## Credits
 
+This module is inspired by, but not really similar to
+[Date Repeat](https://backdropcms.org/project/date_repeat), which has been
+ported from Drupal. So that one's finally available, too, for Backdrop CMS.
+
 To calculate the list of dates, this module uses the MIT licensed
  [RRULE for PHP](https://github.com/rlanvin/php-rrule) library by Rémi Lanvin
 ([rlanvin](https://github.com/rlanvin))
-
-This module is inspired by, but not really similar to
-[Date Repeat](https://backdropcms.org/project/date_repeat), which has been
-ported from Drupal to Backdrop CMS.
 
 ## License
 
