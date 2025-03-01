@@ -48,6 +48,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
     '#prefix' => '<div class="rd-group rd-group-dtstart">',
     '#attributes' => array(
       'time' => array('step' => '60'),
+      'class' => array('rrule-start-date'),
     ),
     '#required' => $instance['required'],
   );
@@ -60,6 +61,7 @@ function _repeating_dates_widget_form($form_state, $instance, $values, $cardinal
       '#suffix' => '</div>',
       '#attributes' => array(
         'time' => array('step' => '60'),
+        'class' => array('rrule-to-date'),
       ),
     );
   }

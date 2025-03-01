@@ -114,3 +114,20 @@
 .field-widget-repeating-date-widget .details-content-wrapper {
   padding: 0 0 .5em;
 }
+.field-widget-repeating-date-widget .del-button {
+  width: 2.2em;
+  height: 2em;
+  padding: 0;
+  margin: 0 0 1.3em;
+  overflow: hidden;
+  align-self: end;
+  text-indent: -333px;
+  mask-image: var(--icon-backspace-fill);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: currentcolor;
+}
+.field-widget-repeating-date-widget .del-button:hover,
+.field-widget-repeating-date-widget .del-button:focus {
+  background-color: #c10101;
+}

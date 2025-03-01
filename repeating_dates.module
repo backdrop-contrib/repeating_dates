@@ -57,6 +57,8 @@ function repeating_dates_field_widget_info() {
       'field types' => array('repeating_date'),
       'settings' => array(
         'hide_to_date' => FALSE,
+        'sync_initial' => 'no',
+        'offset' => '',
         'default_repeat_freq' => 'weekly',
         'default_stop_mode' => 'count',
         'exdate_helptext' => t('Exclude dates from this series of recurrences.'),
@@ -83,6 +85,38 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#title' => t('Hide to-date input'),
       '#default_value' => $settings['hide_to_date'],
       '#description' => t('When to-date is hidden, only a single datetime input is available for start date, no duration.'),
+    );
+    $options = array(
+      'no' => t('Do not synchronize'),
+      'same' => t('To-date same as start date'),
+      'offset' => t('Relative offset to start date'),
+    );
+    $form['sync_initial'] = array(
+      '#type' => 'select',
+      '#title' => t('Synchronize initial to-date'),
+      '#options' => $options,
+      '#default_value' => $settings['sync_initial'],
+      '#description' => t('Initially synchronize start and to-date. Only until a to-date or time is set on purpose.'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="instance[widget][settings][hide_to_date]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+    $offset_help = t('Relative to start date, for example <code>+1 hour</code>. See !strtotime for more details.', array(
+      '!strtotime' => l('strtotime', 'https://www.php.net/manual/function.strtotime.php'),
+    ));
+    $form['offset'] = array(
+      '#type' => 'textfield',
+      '#title' => t('To-date relative offset'),
+      '#default_value' => $settings['offset'],
+      '#description' => $offset_help,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="instance[widget][settings][hide_to_date]"]' => array('checked' => FALSE),
+          ':input[name="instance[widget][settings][sync_initial]"]' => array('value' => 'offset'),
+        ),
+      ),
     );
     $form['default_repeat_freq'] = array(
       '#type' => 'select',
@@ -124,7 +158,23 @@ function repeating_dates_field_widget_form(&$form, &$form_state, $field, $instan
         $element['rrule']['#description'] = $element['#description'];
       }
 
-      $element['#attached']['css'][] = backdrop_get_path('module', 'repeating_dates') . '/css/repeating-dates.css';
+      $module_path = backdrop_get_path('module', 'repeating_dates');
+      $element['#attached']['css'][] = $module_path . '/css/repeating-dates.css';
+      $element['#attached']['js'][] = $module_path . '/js/repeating-dates-flush.js';
+      $element['#attached']['icons'] = array('backspace-fill');
+
+      // If we have a to-date input, add some convenience for date input, if
+      // configured.
+      $widget_settings = $instance['widget']['settings'];
+      if (!$widget_settings['hide_to_date'] && $widget_settings['sync_initial'] != 'no') {
+        $offset = 0;
+        if (!empty($widget_settings['offset']) && ($timestamp = strtotime($widget_settings['offset']))) {
+          $offset = $timestamp - REQUEST_TIME;
+        }
+        $element['#attached']['js'][] = $module_path . '/js/repeating-dates-sync.js';
+        $element['rrule']['#attributes']['data-sync-offset'] = $offset;
+        $element['rrule']['#attributes']['class'][] = 'repeating-dates-sync-widget';
+      }
 
       break;
   }
