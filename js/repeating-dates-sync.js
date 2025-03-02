@@ -1,12 +1,13 @@
 /**
  * @file
+ * Synchronize start and to date/time inputs in repeating dates widget forms.
  */
 (function ($) {
 
   'use strict';
 
   Backdrop.behaviors.repeatingDatesSyncWidget = {
-    attach: function (context, settings) {
+    attach: function () {
       const widget = this;
 
       $('.repeating-dates-sync-widget').each(function () {
@@ -16,69 +17,68 @@
         const offsetMSec = this.dataset.syncOffset * 1000;
 
         // Find relevant form items.
-        const startDateInput = $(this).find('.rrule-start-date .form-date');
-        const startTimeInput = $(this).find('.rrule-start-date .form-time');
-        const endDateInput = $(this).find('.rrule-to-date .form-date');
-        const endTimeInput = $(this).find('.rrule-to-date .form-time');
+        const $startDateInput = $(this).find('.rrule-start-date .form-date');
+        const $startTimeInput = $(this).find('.rrule-start-date .form-time');
+        const $endDateInput = $(this).find('.rrule-to-date .form-date');
+        const $endTimeInput = $(this).find('.rrule-to-date .form-time');
 
+        // Evaluate when we have to stop syncing.
         let endInputEmpty = true;
-        if (endDateInput.val().length || endTimeInput.val().length) {
+        if ($endDateInput.val().length || $endTimeInput.val().length) {
           endInputEmpty = false;
         }
 
-        startDateInput.on('change', function (event) {
+        $startDateInput.on('change', function () {
           if (!endInputEmpty) {
             return;
           }
           let newValue = $(this).val();
-          // Reset everything on start date flush.
-          if (newValue.length === 0) {
-            startTimeInput.val('');
-            endDateInput.val('');
-            endTimeInput.val('');
+          // Start date has been emptied.
+          if (newValue === '') {
             return;
           }
-
-          let startDateTime = new Date(newValue + ' ' + startTimeInput.val());
+          let startDateTime = new Date(newValue + ' ' + $startTimeInput.val());
           let endDateTime = startDateTime;
           endDateTime.setTime(startDateTime.getTime() + offsetMSec);
-          let inputFormats = widget.getInputFormats(endDateTime);
 
-          endDateInput.val(inputFormats.date);
-          endTimeInput.val(inputFormats.time);
+          let inputFormats = widget.getInputFormats(endDateTime);
+          $endDateInput.val(inputFormats.date);
+          $endTimeInput.val(inputFormats.time);
           // Populate time input if it hasn't been set, yet.
-          if (startTimeInput.val() === '') {
-            startTimeInput.val('00:00');
+          if ($startTimeInput.val() === '') {
+            $startTimeInput.val('00:00');
           }
         });
 
-        startTimeInput.on('change', function (event) {
+        $startTimeInput.on('change', function () {
           if (!endInputEmpty) {
             return;
           }
-          let newValue = $(this).val();
-          let startDateTime = new Date(startDateInput.val() + ' ' + newValue);
-
+          // Nothing to derive from.
+          if ($startDateInput.val() === '') {
+            return;
+          }
+          let startDateTime = new Date($startDateInput.val() + ' ' + $(this).val());
           let endDateTime = startDateTime;
           endDateTime.setTime(startDateTime.getTime() + offsetMSec);
 
           let inputFormats = widget.getInputFormats(endDateTime);
-          endDateInput.val(inputFormats.date);
-          endTimeInput.val(inputFormats.time);
+          $endDateInput.val(inputFormats.date);
+          $endTimeInput.val(inputFormats.time);
         });
 
         // Stop automatic value sync on user input, to let people freely
         // override the default offset.
         // Restore automatic value sync if to-date and time are emptied.
-        endDateInput.on('change', function () {
-          if (endDateInput.val() === '' && endTimeInput.val() === '') {
+        $endDateInput.on('change', function () {
+          if ($endDateInput.val() === '' && $endTimeInput.val() === '') {
             endInputEmpty = true;
             return;
           }
           endInputEmpty = false;
         });
-        endTimeInput.on('change', function () {
-          if (endDateInput.val() === '' && endTimeInput.val() === '') {
+        $endTimeInput.on('change', function () {
+          if ($endDateInput.val() === '' && $endTimeInput.val() === '') {
             endInputEmpty = true;
             return;
           }
