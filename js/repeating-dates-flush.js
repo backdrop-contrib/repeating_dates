@@ -1,6 +1,6 @@
 /**
  * @file
- * Provides a button to delete all rrule start input fields at once.
+ * Provides a button to flush all rrule start input fields at once.
  */
 (function ($) {
 
@@ -15,7 +15,8 @@
         const $endDateInput = $(this).find('.rrule-to-date .form-date');
         const $endTimeInput = $(this).find('.rrule-to-date .form-time');
 
-        let button = '<button class="button del-button">' + Backdrop.t('Empty start and to input') + '</button>';
+        let label = Backdrop.t('Empty start and to input fields');
+        let button = '<button class="button del-button" title="' + label + '">' + label + '</button>';
         $(this).append(button);
         $(this).find('.del-button').on('click', function(event) {
           event.preventDefault();
