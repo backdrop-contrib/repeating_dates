@@ -116,7 +116,12 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
           ':input[name="instance[widget][settings][hide_to_date]"]' => array('checked' => FALSE),
           ':input[name="instance[widget][settings][sync_initial]"]' => array('value' => 'offset'),
         ),
+        'required' => array(
+          ':input[name="instance[widget][settings][hide_to_date]"]' => array('checked' => FALSE),
+          ':input[name="instance[widget][settings][sync_initial]"]' => array('value' => 'offset'),
+        ),
       ),
+      '#element_validate' => array('_repeating_dates_field_widget_settings_offset_validate'),
     );
     $form['default_repeat_freq'] = array(
       '#type' => 'select',
@@ -140,6 +145,35 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
     );
 
     return $form;
+  }
+}
+
+/**
+ * Custom element validation callback.
+ *
+ * @param array $element
+ *   FormAPI element (textfield) to validate.
+ * @param array $form_state
+ *   FormAPI form_state array.
+ * @param array $form
+ *   Complete field widget form.
+ */
+function _repeating_dates_field_widget_settings_offset_validate(array $element, array $form_state, array $form) {
+  $settings = $form_state['values']['instance']['widget']['settings'];
+  if ($settings['sync_initial'] == 'offset') {
+    // Make sure an offset pattern is set.
+    if (empty(trim($element['#value']))) {
+      form_error($element, t('If using a relative offset, the offset setting can not be empty.'));
+    }
+    $timestamp = strtotime($element['#value']);
+    // Make sure that strtotime() can handle the pattern.
+    if (!$timestamp) {
+      form_error($element, t('The offset pattern appears to be incorrect.'));
+    }
+    // Make sure to-date is after start date.
+    if ($timestamp < REQUEST_TIME) {
+      form_error($element, t('The offset pattern results in a to-date <em>before</em> start date.'));
+    }
   }
 }
 
