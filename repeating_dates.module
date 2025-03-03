@@ -96,7 +96,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
       '#title' => t('Synchronize initial to-date'),
       '#options' => $options,
       '#default_value' => $settings['sync_initial'],
-      '#description' => t('Initially synchronize start and to-date. Only until a to-date or time is set on purpose.'),
+      '#description' => t('Initially synchronize start and to-date. Synchronization will stop once the to-date or time is overridden.'),
       '#states' => array(
         'visible' => array(
           ':input[name="instance[widget][settings][hide_to_date]"]' => array('checked' => FALSE),
