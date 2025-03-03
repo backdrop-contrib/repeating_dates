@@ -7,7 +7,7 @@
   'use strict';
 
   Backdrop.behaviors.repeatingDatesFlush = {
-    attach: function (context, settings) {
+    attach: function () {
       $('.rd-group-dtstart').each(function () {
         // Find relevant form items.
         const $startDateInput = $(this).find('.rrule-start-date .form-date');
