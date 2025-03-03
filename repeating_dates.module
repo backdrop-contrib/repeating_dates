@@ -168,8 +168,11 @@ function repeating_dates_field_widget_form(&$form, &$form_state, $field, $instan
       $widget_settings = $instance['widget']['settings'];
       if (!$widget_settings['hide_to_date'] && $widget_settings['sync_initial'] != 'no') {
         $offset = 0;
-        if (!empty($widget_settings['offset']) && ($timestamp = strtotime($widget_settings['offset']))) {
-          $offset = $timestamp - REQUEST_TIME;
+        if ($widget_settings['sync_initial'] == 'offset' && !empty($widget_settings['offset'])) {
+          $timestamp = strtotime($widget_settings['offset']);
+          if ($timestamp) {
+            $offset = $timestamp - REQUEST_TIME;
+          }
         }
         $element['#attached']['js'][] = $module_path . '/js/repeating-dates-sync.js';
         $element['rrule']['#attributes']['data-sync-offset'] = $offset;
