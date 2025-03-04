@@ -1,5 +1,7 @@
 .field-widget-repeating-date-widget .rd-group {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 .field-widget-repeating-date-widget .rd-group > div {
   margin-right: 1em;/* LTR */
@@ -23,7 +25,7 @@
   padding: 0;
 }
 .field-widget-repeating-date-widget .form-checkboxes input {
-  margin: 0 !important;
+  margin: 4px !important;
 }
 .field-widget-repeating-date-widget .form-checkboxes .form-item label {
   position: absolute;
@@ -98,19 +100,35 @@
   z-index: -1;/* @todo a11y? */
 }
 .field-widget-repeating-date-widget .form-radios label {
-  background: #f4f4f4;
+  background: #ccc3;
   border: 1px solid #ccc;
   padding: 4px 15px;
   margin: 0 0 -1px;
 }
 .field-widget-repeating-date-widget .form-radios label:hover {
-  background: #fbfbfb;
+  background: #ccc2;
 }
 .field-widget-repeating-date-widget .form-radios input:checked + label {
-  background: #fff;
+  background: inherit;
   border-bottom-color: #fff;
 }
 .field-widget-repeating-date-widget .fieldset-description,
 .field-widget-repeating-date-widget .details-content-wrapper {
   padding: 0 0 .5em;
+}
+.field-widget-repeating-date-widget .del-button {
+  width: 2.2em;
+  height: 2em;
+  padding: 0;
+  margin: .5em 0 0;
+  overflow: hidden;
+  text-indent: -333px;
+  mask-image: var(--icon-backspace-fill);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: currentcolor;
+}
+.field-widget-repeating-date-widget .del-button:hover,
+.field-widget-repeating-date-widget .del-button:focus {
+  background-color: #c10101;
 }
