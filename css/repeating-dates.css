@@ -1,5 +1,6 @@
 .field-widget-repeating-date-widget .rd-group {
   display: flex;
+  flex-wrap: wrap;
 }
 .field-widget-repeating-date-widget .rd-group > div {
   margin-right: 1em;/* LTR */
@@ -23,7 +24,7 @@
   padding: 0;
 }
 .field-widget-repeating-date-widget .form-checkboxes input {
-  margin: 0 !important;
+  margin: 4px !important;
 }
 .field-widget-repeating-date-widget .form-checkboxes .form-item label {
   position: absolute;
@@ -98,16 +99,16 @@
   z-index: -1;/* @todo a11y? */
 }
 .field-widget-repeating-date-widget .form-radios label {
-  background: #f4f4f4;
+  background: #ccc3;
   border: 1px solid #ccc;
   padding: 4px 15px;
   margin: 0 0 -1px;
 }
 .field-widget-repeating-date-widget .form-radios label:hover {
-  background: #fbfbfb;
+  background: #ccc2;
 }
 .field-widget-repeating-date-widget .form-radios input:checked + label {
-  background: #fff;
+  background: inherit;
   border-bottom-color: #fff;
 }
 .field-widget-repeating-date-widget .fieldset-description,
@@ -118,7 +119,7 @@
   width: 2.2em;
   height: 2em;
   padding: 0;
-  margin: 0 0 1.3em;
+  margin: 0 0 1.4em;
   overflow: hidden;
   align-self: end;
   text-indent: -333px;
