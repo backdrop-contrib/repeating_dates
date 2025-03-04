@@ -16,7 +16,7 @@
         const $endTimeInput = $(this).find('.rrule-to-date .form-time');
 
         let label = Backdrop.t('Empty start and to input fields');
-        let button = '<button class="button button-secondary del-button" title="' + label + '">' + label + '</button>';
+        let button = '<button class="button button-secondary del-button" type="button" title="' + label + '">' + label + '</button>';
         $(this).append(button);
         $(this).find('.del-button').on('click', function(event) {
           event.preventDefault();

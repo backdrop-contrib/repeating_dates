@@ -1,6 +1,7 @@
 .field-widget-repeating-date-widget .rd-group {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 }
 .field-widget-repeating-date-widget .rd-group > div {
   margin-right: 1em;/* LTR */
@@ -119,9 +120,8 @@
   width: 2.2em;
   height: 2em;
   padding: 0;
-  margin: 0 0 1.4em;
+  margin: .5em 0 0;
   overflow: hidden;
-  align-self: end;
   text-indent: -333px;
   mask-image: var(--icon-backspace-fill);
   mask-repeat: no-repeat;
