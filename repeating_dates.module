@@ -504,6 +504,9 @@ function repeating_dates_field_views_data_views_data_alter(&$data, $field) {
     $data[$data_table_name][$field_name . '_dtend']['filter']['handler'] = 'views_handler_filter_date';
     $data[$data_table_name][$field_name . '_dtstart']['sort']['handler'] = 'views_handler_sort_date';
     $data[$data_table_name][$field_name . '_dtend']['sort']['handler'] = 'views_handler_sort_date';
+    // Click sorting in views table headers.
+    $data[$data_table_name][$field_name . '_dtstart']['field']['click sortable'] = TRUE;
+    $data[$data_table_name][$field_name . '_dtend']['field']['click sortable'] = TRUE;
   }
 }
 
