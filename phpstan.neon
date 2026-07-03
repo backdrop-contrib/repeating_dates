@@ -1,0 +1,11 @@
+parameters:
+  level: 5
+  scanDirectories:
+    - ../../core
+  fileExtensions:
+    - module
+    - inc
+    - install
+  excludePaths:
+    analyse:
+      - libraries

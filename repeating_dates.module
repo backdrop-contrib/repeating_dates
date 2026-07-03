@@ -485,7 +485,7 @@ function repeating_dates_field_presave($entity_type, $entity, $field, $instance,
   $tz = date_default_timezone();
   $dtstart_str = trim(implode(' ', $rrule['dtstart']));
   $dtstart_obj = new DateTime($dtstart_str, new DateTimeZone($tz));
-  $dtstart_stamp = $dtstart_obj->format('U');
+  $dtstart_stamp = (int) $dtstart_obj->format('U');
   $duration = 0;
   $ical_rrule = _repeating_dates_build_rrule($rrule, $dtstart_obj);
   if (is_array($rrule['dtend']) && !empty($rrule['dtend']['date'])) {
@@ -670,19 +670,13 @@ function repeating_dates_process_datelist($element) {
  * @param string $timezone
  *   Timezone name to use for conversion.
  *
- * @return string
+ * @return int
  *   Unix timestamp.
  */
-function _repeating_dates_array_to_timestamp($values, $timezone = 'UTC') {
-  if (is_array($values)) {
-    $string = trim(implode(' ', $values));
-    $datetime = new DateTime($string, new DateTimeZone($timezone));
-
-    if (is_object($datetime)) {
-      return $datetime->format('U');
-    }
-  }
-  return '0';
+function _repeating_dates_array_to_timestamp(array $values, $timezone = 'UTC') {
+  $string = trim(implode(' ', $values));
+  $datetime = new DateTime($string, new DateTimeZone($timezone));
+  return (int) $datetime->format('U');
 }
 
 /**
@@ -808,7 +802,8 @@ function _repeating_dates_frequency_options() {
  *   Formatted date.
  */
 function _repeating_dates_custom_date_formatter(DateTime $date) {
-  return format_date($date->format('U'), 'date_only');
+  $timestamp = (int) $date->format('U');
+  return format_date($timestamp, 'date_only');
 }
 
 /**
@@ -850,7 +845,7 @@ function _repeating_dates_rule_description($values, $settings) {
         $date_strings = explode(',', $datelist_parts[1]);
         foreach ($date_strings as $string) {
           $date = new DateTime($string, $tz_obj);
-          $dates[] = format_date($date->format('U'), $settings['dateonly_format']);
+          $dates[] = format_date((int) $date->format('U'), $settings['dateonly_format']);
         }
         $description .= '<br>' . t('Except for: !dates', array(
           '!dates' => implode(', ', $dates),

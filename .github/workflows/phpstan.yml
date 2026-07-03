@@ -1,0 +1,9 @@
+name: PHPStan
+on: [pull_request]
+jobs:
+  code_analysis:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PHPStan
+        uses: indigoxela/gha_composite/actions/phpstan@v1
