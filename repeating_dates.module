@@ -797,6 +797,21 @@ function _repeating_dates_frequency_options() {
 }
 
 /**
+ * Custom callback used in RRule::humanReadable().
+ *
+ * We use "date_only", as we can not have any field formatter context in this callback.
+ *
+ * @param DateTime $date
+ *   Provided when called from RRule::humanReadable().
+ *
+ * @return string
+ *   Formatted date.
+ */
+function _repeating_dates_custom_date_formatter(DateTime $date) {
+  return format_date($date->format('U'), 'date_only');
+}
+
+/**
  * Helper function to return a descriptive repesentation of the rrule.
  *
  * @param array $values
@@ -817,7 +832,15 @@ function _repeating_dates_rule_description($values, $settings) {
       // @todo and it's relatively slow.
       $rule_parts = explode("\r\n", $values['rrule']);
       $rrule_obj = new RRule("DTSTART;TZID=$tz:" . $dtstart->format('Ymd\THis') . "\r\n" . $rule_parts[0]);
-      $description = $rrule_obj->humanReadable(array('locale' => $language->langcode));
+      $hr_options = array(
+        'locale' => $language->langcode,
+      );
+      // Check if this format exists. Fall back to what RRule provides (Intl if
+      // available, some nerdy generic format if not).
+      if (config_get('system.date', 'formats.date_only')) {
+        $hr_options['date_formatter'] = '_repeating_dates_custom_date_formatter';
+      }
+      $description = $rrule_obj->humanReadable($hr_options);
 
       if (!empty($rule_parts[1])) {
         $dates = array();
