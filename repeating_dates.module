@@ -828,8 +828,7 @@ function _repeating_dates_rule_description($values, $settings) {
     try {
       global $language;
       $description = '';
-      // @todo outcome is at least as odd as with date_repeat. :(
-      // @todo and it's relatively slow.
+      // @todo It's relatively slow.
       $rule_parts = explode("\r\n", $values['rrule']);
       $rrule_obj = new RRule("DTSTART;TZID=$tz:" . $dtstart->format('Ymd\THis') . "\r\n" . $rule_parts[0]);
       $hr_options = array(
