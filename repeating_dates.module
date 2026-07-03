@@ -286,6 +286,23 @@ function repeating_dates_field_formatter_info() {
         'timeonly_format' => 'html_time',
       ),
     ),
+    'repeating_date_collapsed' => array(
+      'label' => t('Repeating date collapsed'),
+      'field types' => array('repeating_date'),
+      'settings' => array(
+        'hide_description' => FALSE,
+        'datetime_format' => 'short',
+        'dateonly_format' => 'html_date',
+        'timeonly_format' => 'html_time',
+      ),
+    ),
+    'repeating_date_description_only' => array(
+      'label' => t('Repeating date description only'),
+      'field types' => array('repeating_date'),
+      'settings' => array(
+        'dateonly_format' => 'html_date',
+      ),
+    ),
   );
 }
 
@@ -297,18 +314,20 @@ function repeating_dates_field_formatter_settings_form($field, $instance, $view_
   $settings = $display['settings'];
   $element = array();
 
-  if ($display['type'] == 'repeating_date_list') {
+  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
     $element['hide_description'] = array(
       '#type' => 'checkbox',
       '#title' => t('Hide the rule summary (description)'),
       '#default_value' => $settings['hide_description'],
     );
+  }
 
-    $date_formats = system_get_date_formats();
-    $options = array();
-    foreach ($date_formats as $name => $values) {
-      $options[$name] = $values['label'];
-    }
+  $date_formats = system_get_date_formats();
+  $options = array();
+  foreach ($date_formats as $name => $values) {
+    $options[$name] = $values['label'];
+  }
+  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
     $element['datetime_format'] = array(
       '#type' => 'select',
       '#title' => t('Full date and time format'),
@@ -329,6 +348,14 @@ function repeating_dates_field_formatter_settings_form($field, $instance, $view_
       '#description' => t('You might want to create a custom format for date only or time only.'),
     );
   }
+  if ($display['type'] == 'repeating_date_description_only') {
+    $element['dateonly_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Date only format'),
+      '#options' => $options,
+      '#default_value' => $settings['dateonly_format'],
+    );
+  }
 
   return $element;
 }
@@ -340,8 +367,9 @@ function repeating_dates_field_formatter_settings_summary($field, $instance, $vi
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $summary = '';
+  $formats = system_get_date_formats();
 
-  if ($display['type'] == 'repeating_date_list') {
+  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
     $list = array();
     if ($settings['hide_description']) {
       $list[] = t('The repeat rule summary is hidden.');
@@ -349,7 +377,6 @@ function repeating_dates_field_formatter_settings_summary($field, $instance, $vi
     else {
       $list[] = t('The repeat rule summary is shown.');
     }
-    $formats = system_get_date_formats();
     $list[] = t('Full datetime format is %format', array(
       '%format' => $formats[$settings['datetime_format']]['label'],
     ));
@@ -362,6 +389,11 @@ function repeating_dates_field_formatter_settings_summary($field, $instance, $vi
 
     $summary = theme('item_list', array('items' => $list));
   }
+  elseif ($display['type'] == 'repeating_date_description_only') {
+    $summary = t('Date only format is %format', array(
+      '%format' => $formats[$settings['dateonly_format']]['label'],
+    ));
+  }
 
   return $summary;
 }
@@ -371,46 +403,62 @@ function repeating_dates_field_formatter_settings_summary($field, $instance, $vi
  */
 function repeating_dates_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
   $element = array();
+  if (empty($items)) {
+    return $element;
+  }
+  // @todo is there a way to fiddle a preview and is it worth it?
+  $args = arg();
+  if (count($args) == 4 && $args[1] == 'preview') {
+    $output = t('Field %label does not support dynamic preview.', array(
+      '%label' => $instance['label'],
+    ));
+    $element[0] = array('#markup' => $output);
+    return $element;
+  }
+  $settings = $display['settings'];
+
   switch ($display['type']) {
     case 'repeating_date_list':
-      if (empty($items)) {
-        return $element;
-      }
-      // @todo is there a way to fiddle a preview and is it worth it?
-      $args = arg();
-      if (count($args) == 4 && $args[1] == 'preview') {
-        $output = t('Field %label does not support dynamic preview.', array(
-          '%label' => $instance['label'],
-        ));
-        $element[0] = array('#markup' => $output);
-        return $element;
-      }
-
-      $settings = $display['settings'];
       $prefix = '';
       if (!$settings['hide_description']) {
         $prefix = '<div class="rrule-description">' . _repeating_dates_rule_description($items[0], $settings) . '</div>';
       }
-      $item_list = array();
-      $dtstart_date = format_date($items[0]['dtstart'], 'custom', 'Y-m-d');
-      $dtend_date = format_date($items[0]['dtend'], 'custom', 'Y-m-d');
-
-      foreach ($items as $delta => $item) {
-        $item_list[$delta] = format_date($item['dtstart'], $settings['datetime_format']);
-        // Skip "To" datetime, if it's the same as start.
-        if ($item['dtend'] != $item['dtstart']) {
-          // Skip redundant date info, if both dates are the same.
-          if ($dtstart_date == $dtend_date) {
-            $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['timeonly_format']);
-          }
-          else {
-            $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['datetime_format']);
-          }
-        }
-      }
+      $item_list = _repeating_dates_get_formatted_dates($items, $settings);
       $element[0] = array(
         '#type' => 'markup',
         '#markup' => $prefix . theme('item_list', array('items' => $item_list)),
+      );
+      break;
+
+    case 'repeating_date_collapsed':
+      $prefix = '';
+      if (!$settings['hide_description']) {
+        $prefix = '<div class="rrule-description">' . _repeating_dates_rule_description($items[0], $settings) . '</div>';
+      }
+      $item_list = _repeating_dates_get_formatted_dates($items, $settings);
+
+      $dates = '';
+      if (count($item_list) > 1) {
+        $summary = t('View all @count dates', array(
+          '@count' => count($item_list),
+        ));
+        $list = theme('item_list', array('items' => $item_list));
+        $dates = '<details><summary>' . $summary . '</summary>' . $list . '</details>';
+      }
+      else {
+        $dates = '<div class="single-date">' . reset($item_list) . '</div>';
+      }
+      $element[0] = array(
+        '#type' => 'markup',
+        '#markup' => $prefix . $dates,
+      );
+      break;
+
+    case 'repeating_date_description_only':
+      $description = '<div class="rrule-description">' . _repeating_dates_rule_description($items[0], $settings) . '</div>';
+      $element[0] = array(
+        '#type' => 'markup',
+        '#markup' => $description,
       );
       break;
   }
@@ -793,4 +841,36 @@ function _repeating_dates_rule_description($values, $settings) {
       return;
     }
   }
+}
+
+/**
+ * Helper function to get an array of properly formatted date strings.
+ *
+ * @param array $items
+ *   Array of raw field item values.
+ * @param array $settings
+ *   Field settings.
+ *
+ * @return array
+ *   Array of formatted date values.
+ */
+function _repeating_dates_get_formatted_dates(array $items, array $settings) {
+  $item_list = array();
+  $dtstart_date = format_date($items[0]['dtstart'], 'custom', 'Y-m-d');
+  $dtend_date = format_date($items[0]['dtend'], 'custom', 'Y-m-d');
+
+  foreach ($items as $delta => $item) {
+    $item_list[$delta] = format_date($item['dtstart'], $settings['datetime_format']);
+    // Skip "To" datetime, if it's the same as start.
+    if ($item['dtend'] != $item['dtstart']) {
+      // Skip redundant date info, if both dates are the same.
+      if ($dtstart_date == $dtend_date) {
+        $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['timeonly_format']);
+      }
+      else {
+        $item_list[$delta] .= ' – ' . format_date($item['dtend'], $settings['datetime_format']);
+      }
+    }
+  }
+  return $item_list;
 }
