@@ -137,7 +137,7 @@ function repeating_dates_field_widget_settings_form($field, $instance) {
         'date' => t('Date'),
       ),
       '#default_value' => isset($settings['default_stop_mode']) ? $settings['default_stop_mode'] : 'count',
-      );
+    );
     $form['exdate_helptext'] = array(
       '#type' => 'textfield',
       '#title' => t('Help text for excluded dates'),
@@ -313,8 +313,9 @@ function repeating_dates_field_formatter_settings_form($field, $instance, $view_
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $element = array();
+  $list_types = array('repeating_date_list', 'repeating_date_collapsed');
 
-  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
+  if (in_array($display['type'], $list_types)) {
     $element['hide_description'] = array(
       '#type' => 'checkbox',
       '#title' => t('Hide the rule summary (description)'),
@@ -327,7 +328,7 @@ function repeating_dates_field_formatter_settings_form($field, $instance, $view_
   foreach ($date_formats as $name => $values) {
     $options[$name] = $values['label'];
   }
-  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
+  if (in_array($display['type'], $list_types)) {
     $element['datetime_format'] = array(
       '#type' => 'select',
       '#title' => t('Full date and time format'),
@@ -368,8 +369,9 @@ function repeating_dates_field_formatter_settings_summary($field, $instance, $vi
   $settings = $display['settings'];
   $summary = '';
   $formats = system_get_date_formats();
+  $list_types = array('repeating_date_list', 'repeating_date_collapsed');
 
-  if (in_array($display['type'], array('repeating_date_list', 'repeating_date_collapsed'))) {
+  if (in_array($display['type'], $list_types)) {
     $list = array();
     if ($settings['hide_description']) {
       $list[] = t('The repeat rule summary is hidden.');

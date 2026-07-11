@@ -1,0 +1,12 @@
+name: Coding standards
+on: [pull_request]
+jobs:
+  coding_standards:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PHP_CodeSniffer
+        uses: indigoxela/gha_composite/actions/phpcs_full@v1
+        with:
+          ignore_pattern: "libraries"
+          fail_on_warnings: "false"
