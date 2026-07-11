@@ -8,5 +8,4 @@ jobs:
       - name: Run PHP_CodeSniffer
         uses: indigoxela/gha_composite/actions/phpcs_full@v1
         with:
-          ignore_pattern: "libraries"
           fail_on_warnings: "false"
