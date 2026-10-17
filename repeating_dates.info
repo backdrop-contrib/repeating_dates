@@ -4,5 +4,6 @@ type = module
 backdrop = 1.x
 package = Fields
 tags[] = Fields
+php = 7.3
 
 dependencies[] = field
